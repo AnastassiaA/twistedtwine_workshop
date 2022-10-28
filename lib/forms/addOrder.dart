@@ -23,12 +23,24 @@ class AddOrderState extends State<AddOrderForm> {
   final orderNameController = TextEditingController();
   final customerContactController = TextEditingController();
   final craftTypeController = TextEditingController();
-  final statusController = TextEditingController();
   final descriptionController = TextEditingController();
 
   String dropdownValue = 'None Selected';
 
   List<CraftTypeModel> dropdownButtonItems = [];
+
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      DropdownMenuItem(child: Text("Status"), value: "Status"),
+      DropdownMenuItem(child: Text("Pending"), value: "Pending"),
+      DropdownMenuItem(child: Text("In Progress"), value: "In Progress"),
+      DropdownMenuItem(child: Text("Complete"), value: "Complete"),
+      DropdownMenuItem(child: Text("On Hold"), value: "On Hold"),
+      DropdownMenuItem(child: Text("Dropped"), value: "Dropped"),
+    ];
+
+    return menuItems;
+  }
 
   // void countOrders() async {
   //     int? count = await DatabaseHelper.instance.numberOfOrders();
@@ -37,7 +49,7 @@ class AddOrderState extends State<AddOrderForm> {
   //     });
   //     print(pendingOrdersNumber);
   //   }
-
+  String selectedValue = "Status";
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -128,18 +140,14 @@ class AddOrderState extends State<AddOrderForm> {
                   //             });
                   //       }),
                   // ),
-                  TextFormField(
-                    controller: statusController,
-                    keyboardType: TextInputType.text,
-                    showCursor: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Status',
-                      //TODO: dropdown menu
-                    ),
-                    //onChanged: (text) {
-                    //threadNumberController.text = _generateThreadNumber(text);
-                    //},
-                  ),
+                  DropdownButtonFormField(
+                      value: selectedValue,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedValue = newValue!;
+                        });
+                      },
+                      items: dropdownItems),
                   TextFormField(
                     controller: descriptionController,
                     keyboardType: TextInputType.text,
@@ -162,12 +170,12 @@ class AddOrderState extends State<AddOrderForm> {
                             await DatabaseHelper.instance.addOrder(
                               OrderModel(
                                   description: descriptionController.text,
-                                  status: statusController.text,
+                                  status: selectedValue,
                                   customer: customerContactController.text,
                                   orderName: orderNameController.text,
                                   craftType: craftTypeController.text),
                             );
-
+                            if (!mounted) return;
                             Navigator.pop(
                               context,
                               // MaterialPageRoute(

@@ -46,7 +46,7 @@ class _AddExpenseState extends State<AddExpense> {
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
           backgroundColor: const Color(0xff693b58),
-          title: Text('Add Expense'),
+          title: const Text('Add Expense'),
         ),
         body: Form(
           key: _formKey,
@@ -129,7 +129,10 @@ class _AddExpenseState extends State<AddExpense> {
                                 amount: double.parse(amountController.text),
                                 paidTo: paidToController.text),
                           );
-                          Navigator.pop(context);
+                          if (!mounted) return;
+                          Navigator.pop(
+                            context,
+                          );
                         },
                         child: Text("add expense"),
                       ),

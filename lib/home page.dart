@@ -7,6 +7,8 @@ import 'drawer.dart';
 //import 'package:charts_flutter/flutter.dart' as charts;
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
           create: (context) => DatabaseHelper.instance,
         ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: MyHomePage(),
       ),
@@ -32,15 +34,18 @@ class MyApp extends StatelessWidget {
 
 @immutable
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   double businessWalletBalance = 0.00;
   double totalExpense = 0.00;
   double totalPayment = 0.00;
   int pendingOrdersNumber = 0;
+  int inProgressNumber = 0;
   double transferOut = 0.00;
   double transferIn = 0.00;
 
@@ -51,21 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // FutureBuilder(
-  // future: DatabaseHelper.instance.numberOfOrders(),
-  // builder:
-  // (context, AsyncSnapshot<dynamic> snapshot) {
-  // //if (snapshot.hasData) {
-  // return MyHomePage();
-  // //}
-  // },
-  // );
-
   void businessWallet() async {
-    double? payments = 0.0;
-    double? expense = 0.0;
-    double? outTransfers = 0.0;
-    double? inTransfers = 0.0;
+    double payments;
+    double expense;
+    double outTransfers;
+    double inTransfers;
 
     payments = (await DatabaseHelper.instance.calculateTotalFromPayments())[0]
         ['TotalPayments'];
@@ -77,31 +72,17 @@ class _MyHomePageState extends State<MyHomePage> {
         .transferInFromTotalPayment())[0]['TransferIn'];
 
     setState(() {
-      if (payments != null && expense == null && inTransfers != null) {
-        businessWalletBalance = payments;
-        totalPayment = payments - inTransfers;
-        transferIn = inTransfers;
-      } else {
-        if (payments != null &&
-            expense != null &&
-            outTransfers != null &&
-            inTransfers != null) {
-          if (payments <= expense) {
-            businessWalletBalance = 0.0;
-          } else {
-            businessWalletBalance = (payments - expense);
-          }
-          totalPayment = payments - inTransfers;
-          totalExpense = expense - outTransfers;
-          transferIn = inTransfers;
-          transferOut = outTransfers;
-        } else {
-          if (payments == null && expense != null && outTransfers != null) {
-            totalExpense = expense - outTransfers;
-            transferOut = outTransfers;
-          }
-        }
-      }
+      if (payments == null) payments = 0.0;
+      if (expense == null) expense = 0.0;
+      if (inTransfers == null) inTransfers = 0.0;
+      if (outTransfers == null) outTransfers = 0.0;
+
+      totalPayment = payments - inTransfers;
+      totalExpense = expense - outTransfers;
+      transferIn = inTransfers;
+      transferOut = outTransfers;
+      businessWalletBalance =
+          totalPayment + transferIn - totalExpense - transferOut;
     });
 
     print('Business Wallet: $businessWalletBalance');
@@ -135,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 110,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16),
+                      padding: const EdgeInsets.only(left: 16, right: 16),
                       child: Container(
                         decoration: const BoxDecoration(),
                         child: Column(
@@ -169,40 +150,64 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: EdgeInsets.only(right: 30),
+                      padding: const EdgeInsets.only(right: 30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.account_balance_wallet_rounded,
                             color: Colors.white,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.attach_money,
                             color: Colors.white,
                           ),
                           Text('$businessWalletBalance',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18.0,
                                   //fontWeight: FontWeight.bold,
                                   color: Colors.white)),
                         ],
                       ),
                     ),
-                    Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text('$pendingOrdersNumber',
-                            style:
-                                TextStyle(fontSize: 120, color: Colors.white)),
-                        Text('Orders Pending',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white)),
-                        SizedBox(height: 40),
+                        Column(children: [
+                          Text('$pendingOrdersNumber',
+                              style: const TextStyle(
+                                  fontSize: 120, color: Colors.white)),
+                          const Text('Orders Pending',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                        ]),
+                        // VerticalDivider(
+                        //   color: Colors.white,
+                        //   thickness: 40.0,
+                        //   width: 40.0,
+                        // ),
+                        Column(
+                          children: [
+                            Text('$pendingOrdersNumber',
+                                style: const TextStyle(
+                                    fontSize: 120, color: Colors.white)),
+                            const Text('In Progress(fix this)',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end, //set something to double infinite for this to work
+                      children: [
+                        const SizedBox(height: 40),
                         Container(
                           height: 70,
-                          margin:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          margin: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 10),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15)),
@@ -218,24 +223,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                       color: const Color(0xff4d8a64),
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.attach_money,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     "Income",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 15,
                                     ),
                                   ),
                                 ],
                               ),
                               Container(
-                                margin: EdgeInsets.only(right: 10),
+                                margin: const EdgeInsets.only(right: 10),
                                 child: Text(
                                   '$totalPayment',
-                                  style: TextStyle(fontSize: 15.0),
+                                  style: const TextStyle(fontSize: 15.0),
                                 ),
                               ),
                             ],
@@ -243,8 +248,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Container(
                           height: 70,
-                          margin:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          margin: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 10),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15),
@@ -266,16 +271,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                       Icons.attach_money,
                                     ),
                                   ),
-                                  Text("Transfer In ",
+                                  const Text("Transfer In ",
                                       style: TextStyle(
                                         fontSize: 15,
                                       )),
                                 ],
                               ),
                               Container(
-                                margin: EdgeInsets.only(right: 10),
+                                margin: const EdgeInsets.only(right: 10),
                                 child: Text('$transferIn',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 15.0,
                                     )),
                               ),
@@ -284,8 +289,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Container(
                           height: 70,
-                          margin:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          margin: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 10),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15)),
@@ -301,21 +306,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                       color: const Color(0xff4d8a64),
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.attach_money,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Text("Expense",
-                                      style: TextStyle(
+                                  const Text("Expense",
+                                      style: const TextStyle(
                                         fontSize: 15.0,
                                       )),
                                 ],
                               ),
                               Container(
-                                margin: EdgeInsets.only(right: 10),
+                                margin: const EdgeInsets.only(right: 10),
                                 child: Text('$totalExpense',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 15.0,
                                     )),
                               )
@@ -324,8 +329,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Container(
                           height: 70,
-                          margin:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          margin: const EdgeInsets.only(
+                              left: 10, right: 10, bottom: 10),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15)),
@@ -341,21 +346,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                       color: const Color(0xff4d8a64),
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.attach_money,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Text("Transfer out",
+                                  const Text("Transfer out",
                                       style: TextStyle(
                                         fontSize: 15,
                                       )),
                                 ],
                               ),
                               Container(
-                                margin: EdgeInsets.only(right: 10),
+                                margin: const EdgeInsets.only(right: 10),
                                 child: Text('$transferOut',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 15.0,
                                     )),
                               )

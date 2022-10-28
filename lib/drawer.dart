@@ -22,7 +22,7 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage("images/ttc_image.jpg"), fit: BoxFit.cover),
@@ -185,7 +185,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: FaIcon(FontAwesomeIcons.hashtag),
-            title: Text('Insta Profile'),
+            title: Text('Backup and Restore'),
             tileColor: const Color(0xffE9DCE5),
             onTap: () {},
           ),

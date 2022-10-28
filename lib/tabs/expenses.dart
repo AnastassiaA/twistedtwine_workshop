@@ -62,7 +62,7 @@ class ExpenseState extends State<ExpenseHome> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddExpense()),
+              MaterialPageRoute(builder: (context) => const AddExpense()),
             );
           },
         ),

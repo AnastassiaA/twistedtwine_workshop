@@ -22,9 +22,8 @@ class _AddPaymentState extends State<AddPayment> {
     List<DropdownMenuItem<String>> menuItems = [
       DropdownMenuItem(child: Text("Payment Type"), value: "Payment Type"),
       DropdownMenuItem(child: Text("Transfer In"), value: "Transfer In"),
-      DropdownMenuItem(child: Text("Materials"), value: "Materials"),
-      DropdownMenuItem(child: Text("Tools"), value: "Tools"),
-      DropdownMenuItem(child: Text("Transportation"), value: "Transportation"),
+      DropdownMenuItem(child: Text("Deposit"), value: "Deposit"),
+      DropdownMenuItem(child: Text("Order Payment"), value: "Order Payment"),
     ];
 
     return menuItems;
@@ -138,6 +137,7 @@ class _AddPaymentState extends State<AddPayment> {
                                 amount: double.parse(amountController.text),
                                 fromWhom: fromWhomController.text),
                           );
+                          if (!mounted) return;
                           Navigator.pop(context);
                         },
                         child: Text("add payment"),
