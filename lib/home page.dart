@@ -17,9 +17,12 @@ class MyApp extends StatelessWidget {
           create: (context) => DatabaseHelper.instance.numberOfOrders(),
           initialData: 0,
         ),
-        ChangeNotifierProvider(
-          create: (BuildContext context) => DatabaseHelper.instance,
-        ),
+        // FutureProvider<int>(
+        //   create: (context) =>
+        //       DatabaseHelper.instance.numberOfInProgressOrders(),
+        //   initialData: 0,
+        // ),
+
         ChangeNotifierProvider(
           create: (context) => DatabaseHelper.instance,
         ),
@@ -48,13 +51,6 @@ class MyHomePageState extends State<MyHomePage> {
   int inProgressNumber = 0;
   double transferOut = 0.00;
   double transferIn = 0.00;
-
-  void refreshHomeScreen() async {
-    int? count = await DatabaseHelper.instance.numberOfOrders();
-    setState(() {
-      pendingOrdersNumber = count;
-    });
-  }
 
   void businessWallet() async {
     double payments;
@@ -100,6 +96,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     int pendingOrdersNumber = Provider.of<int>(context);
+    int inProgressNumber;
 
     return SafeArea(
       child: Scaffold(
@@ -201,7 +198,8 @@ class MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.end, //set something to double infinite for this to work
+                      mainAxisAlignment: MainAxisAlignment
+                          .end, //set something to double infinite for this to work
                       children: [
                         const SizedBox(height: 40),
                         Container(

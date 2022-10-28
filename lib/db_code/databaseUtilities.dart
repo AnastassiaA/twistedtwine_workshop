@@ -320,6 +320,22 @@ class DatabaseHelper extends ChangeNotifier {
     return numOrders;
   }
 
+  Future<int> numberOfInProgressOrders() async {
+    final db = await database;
+
+    final numInProgress;
+
+    final count = await db.rawQuery(
+        'SELECT COUNT(*) FROM ORDERS WHERE status LIKE "%in progress%"');
+
+    numInProgress = Sqflite.firstIntValue(count);
+
+    print('total in progress = $numInProgress');
+
+    notifyListeners();
+    return numInProgress;
+  }
+
   Future calculateTotalFromExpense() async {
     Database db = await instance.database;
     var ttlexpense =
