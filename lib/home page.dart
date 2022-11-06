@@ -14,7 +14,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         FutureProvider<int>(
-          create: (context) => DatabaseHelper.instance.numberOfOrders(),
+          create: (context) {
+            DatabaseHelper.instance.numberOfOrders();
+            DatabaseHelper.instance.numberOfInProgressOrders();
+          },
           initialData: 0,
         ),
         // FutureProvider<int>(
@@ -22,7 +25,6 @@ class MyApp extends StatelessWidget {
         //       DatabaseHelper.instance.numberOfInProgressOrders(),
         //   initialData: 0,
         // ),
-
         ChangeNotifierProvider(
           create: (context) => DatabaseHelper.instance,
         ),
@@ -89,14 +91,14 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    //countOrders();
+
     businessWallet();
   }
 
   @override
   Widget build(BuildContext context) {
     int pendingOrdersNumber = Provider.of<int>(context);
-    int inProgressNumber;
+    int inProgressNumber = Provider.of<int>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -186,7 +188,7 @@ class MyHomePageState extends State<MyHomePage> {
                         // ),
                         Column(
                           children: [
-                            Text('$pendingOrdersNumber',
+                            Text('$inProgressNumber',
                                 style: const TextStyle(
                                     fontSize: 120, color: Colors.white)),
                             const Text('In Progress(fix this)',
